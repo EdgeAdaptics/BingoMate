@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BingoMate</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #07111f;
+        --panel: rgba(13, 28, 49, 0.86);
+        --panel-2: rgba(18, 39, 68, 0.74);
+        --text: #edf7ff;
+        --muted: #93a9bd;
+        --cyan: #40e0ff;
+        --violet: #aa7cff;
+        --green: #66f2a5;
+        --amber: #ffc857;
+        --red: #ff6584;
+        --border: rgba(148, 185, 216, 0.18);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 18%, rgba(64, 224, 255, 0.22), transparent 28rem),
+          radial-gradient(circle at 88% 0%, rgba(170, 124, 255, 0.24), transparent 24rem),
+          linear-gradient(135deg, #050911 0%, var(--bg) 58%, #0d1222 100%);
+        color: var(--text);
+      }
+
+      header,
+      main {
+        padding-inline: clamp(1rem, 3vw, 3rem);
+      }
+
+      header {
+        padding-top: 2rem;
+        padding-bottom: 1rem;
+      }
+
+      .hero,
+      main {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.9fr);
+        gap: 1rem;
+      }
+
+      main {
+        padding-bottom: 2rem;
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: var(--panel);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.26);
+        border-radius: 1.4rem;
+        padding: 1.2rem;
+        backdrop-filter: blur(16px);
+      }
+
+      .eyebrow {
+        color: var(--green);
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0.35rem 0;
+        font-size: clamp(2.4rem, 6vw, 5.8rem);
+        line-height: 0.92;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+
+      p,
+      li,
+      label {
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      label {
+        display: block;
+        margin-top: 0.85rem;
+        font-size: 0.88rem;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin: 0.25rem 0.4rem 0.25rem 0;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.45rem 0.7rem;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        font-size: 0.82rem;
+      }
+
+      .dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 20px var(--green);
+      }
+
+      .dot.warn {
+        background: var(--amber);
+        box-shadow: 0 0 20px var(--amber);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+        gap: 1rem;
+      }
+
+      .metric {
+        background: var(--panel-2);
+        border: 1px solid var(--border);
+        border-radius: 1rem;
+        padding: 1rem;
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 1.7rem;
+        color: var(--cyan);
+      }
+
+      input,
+      select,
+      textarea,
+      button {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 0.95rem;
+        padding: 0.9rem 1rem;
+        background: rgba(2, 10, 20, 0.72);
+        color: var(--text);
+        font: inherit;
+      }
+
+      textarea {
+        min-height: 7rem;
+        resize: vertical;
+      }
+
+      button {
+        cursor: pointer;
+        border: 0;
+        margin-top: 0.7rem;
+        background: linear-gradient(135deg, var(--cyan), var(--violet));
+        color: #04101c;
+        font-weight: 800;
+      }
+
+      button.secondary {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+      }
+
+      button.danger {
+        background: linear-gradient(135deg, var(--red), #ff9b6a);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+        gap: 0.7rem;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .assistant {
+        display: grid;
+        place-items: center;
+        min-height: 15rem;
+        text-align: center;
+        background:
+          radial-gradient(circle, rgba(64, 224, 255, 0.22), transparent 10rem),
+          var(--panel);
+      }
+
+      .orb {
+        width: 8rem;
+        height: 8rem;
+        border-radius: 50%;
+        background: conic-gradient(from 90deg, var(--cyan), var(--violet), var(--green), var(--cyan));
+        filter: drop-shadow(0 0 34px rgba(64, 224, 255, 0.42));
+        margin: 0 auto 1rem;
+        position: relative;
+      }
+
+      .orb::after {
+        content: "";
+        position: absolute;
+        inset: 0.7rem;
+        border-radius: 50%;
+        background: #081424;
+      }
+
+      .small {
+        font-size: 0.85rem;
+      }
+
+      @media (max-width: 880px) {
+        .hero,
+        main {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <section class="hero">
+        <div class="card">
+          <div class="eyebrow">EdgeAdaptics NAEAI foundation</div>
+          <h1>BingoMate</h1>
+          <p>
+            A local AI companion for Jetson that remembers, reasons, sees, hears,
+            manages devices, and proposes safe automations while keeping personal
+            data under user control.
+          </p>
+          <span class="status-pill"><span id="health-dot" class="dot"></span><span id="health">Checking health</span></span>
+          <span class="status-pill">Local-first</span>
+          <span class="status-pill">Simulation-aware</span>
+          <span class="status-pill">Approval-gated</span>
+        </div>
+        <div class="card assistant">
+          <div>
+            <div class="orb" aria-hidden="true"></div>
+            <strong id="identity-name">Bingo is standing by.</strong>
+            <p id="identity-tagline">Friendly, focused, adaptable, and explicit about what is local, simulated, or blocked.</p>
+            <span class="status-pill"><span id="identity-state-dot" class="dot"></span><span id="identity-state">ready</span></span>
+          </div>
+        </div>
+      </section>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Ask BingoMate</h2>
+        <textarea id="prompt">Help me prepare the Jetson lab demo.</textarea>
+        <button id="send">Ask locally</button>
+        <p id="answer">Response will appear here.</p>
+      </section>
+
+      <section class="card">
+        <h2>Voice Turn</h2>
+        <p class="small">Simulates wake word, STT text, local reasoning, memory, and speaker output until microphone capture is enabled.</p>
+        <textarea id="voice-hint">hey bingo summarize my lab readiness</textarea>
+        <div class="row">
+          <button id="voice-turn">Run voice turn</button>
+          <button id="voice-play" class="secondary">Play last response</button>
+          <button id="voice-stt-status" class="secondary">Check STT</button>
+          <button id="voice-transcribe" class="secondary">Transcribe hint</button>
+        </div>
+        <audio id="voice-player" controls></audio>
+        <p id="voice-output">Voice response will appear here.</p>
+        <p id="voice-stt-output">STT status will appear here.</p>
+      </section>
+
+      <section class="card">
+        <h2>Vision Check</h2>
+        <p class="small">Runs local scene simulation, uploaded-image heuristics through the API, or privacy-gated USB camera capture when enabled.</p>
+        <input id="vision-scene" value="jetson lab desk" />
+        <div class="row">
+          <button id="vision-analyze">Analyze scene</button>
+          <button id="vision-capture" class="secondary">Try camera capture</button>
+        </div>
+        <p id="vision-output">Vision status will appear here.</p>
+      </section>
+
+      <section class="card">
+        <h2>System Snapshot</h2>
+        <div class="grid">
+          <div class="metric"><span>Memories</span><strong id="memory-count">-</strong></div>
+          <div class="metric"><span>Devices</span><strong id="device-count">-</strong></div>
+          <div class="metric"><span>Skills</span><strong id="skill-count">-</strong></div>
+          <div class="metric"><span>Mode</span><strong id="mode">-</strong></div>
+          <div class="metric"><span>Reasoning</span><strong id="reasoning-mode">-</strong></div>
+          <div class="metric"><span>Memory</span><strong id="memory-security">-</strong></div>
+          <div class="metric"><span>Suggestions</span><strong id="suggestion-count">-</strong></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Reasoning Runtime</h2>
+        <p class="small">Local LLM first when configured, optional OpenAI cloud assist second, deterministic fallback always available.</p>
+        <button id="reasoning-probe" class="secondary">Probe reasoning</button>
+        <p id="reasoning-output">Reasoning status will appear here.</p>
+        <ul id="reasoning-details"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Proactive Assist</h2>
+        <p class="small">Local context fusion across voice, vision, memory, devices, skills, events, and privacy state.</p>
+        <ul id="suggestions"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Bingo Identity</h2>
+        <p id="identity-role">Identity profile will appear after local API auth succeeds.</p>
+        <p id="identity-growth" class="small">Growth signals stay local and user-approved.</p>
+        <ul id="identity-awareness"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Live Events</h2>
+        <p id="event-state">Connecting after auth state is known.</p>
+        <ul id="events"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Local Auth</h2>
+        <p id="auth-state">Checking whether a local token is required.</p>
+        <label for="auth-token">Dashboard token</label>
+        <input id="auth-token" type="password" autocomplete="off" placeholder="Paste BINGOMATE_AUTH_TOKEN if enabled" />
+        <div class="row">
+          <button id="save-token" class="secondary">Save token locally</button>
+          <button id="clear-token" class="secondary">Clear token</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Memory Center</h2>
+        <label for="memory-kind">Kind</label>
+        <select id="memory-kind">
+          <option value="note">note</option>
+          <option value="preference">preference</option>
+          <option value="routine">routine</option>
+          <option value="episodic">episodic</option>
+          <option value="knowledge">knowledge</option>
+          <option value="feedback">feedback</option>
+        </select>
+        <label for="memory-content">Content</label>
+        <textarea id="memory-content" placeholder="Teach Bingo something local and useful."></textarea>
+        <label for="memory-tags">Tags</label>
+        <input id="memory-tags" placeholder="privacy,jetson,demo" />
+        <button id="add-memory">Remember locally</button>
+        <label for="memory-query">Search</label>
+        <input id="memory-query" placeholder="privacy, routines, Jetson, sensor alerts" />
+        <label for="memory-search-mode">Search mode</label>
+        <select id="memory-search-mode">
+          <option value="hybrid">hybrid vector + text</option>
+          <option value="vector">local hash-vector</option>
+          <option value="text">text only</option>
+        </select>
+        <button id="search-memory" class="secondary">Search memory</button>
+        <p id="memory-search-output">Recent memories are shown by default.</p>
+        <div class="row">
+          <button id="export-jsonl" class="secondary">Export JSONL</button>
+          <button id="export-csv" class="secondary">Export CSV</button>
+        </div>
+        <ul id="memories"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Devices</h2>
+        <ul id="devices"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Device Transports</h2>
+        <p class="small">REST and WebSocket are live now. MQTT can dry-run without a broker; BLE is exposed as a readiness boundary.</p>
+        <button id="mqtt-dry-run" class="secondary">Test MQTT dry-run</button>
+        <p id="transport-output">Transport status will appear here.</p>
+        <ul id="transports"></ul>
+      </section>
+
+      <section class="card">
+        <h2>Skills</h2>
+        <label for="skill-name">Skill name</label>
+        <input id="skill-name" placeholder="daily_lab_brief" />
+        <label for="skill-description">Description</label>
+        <input id="skill-description" placeholder="Drafts a local lab briefing." />
+        <label for="skill-template">Template</label>
+        <textarea id="skill-template" placeholder="Use {prompt} and {context} placeholders."></textarea>
+        <label>
+          <input id="skill-approval" type="checkbox" checked />
+          Requires approval before action
+        </label>
+        <button id="add-skill">Teach Bingo this skill</button>
+        <label for="skill-run-prompt">Run prompt</label>
+        <input id="skill-run-prompt" placeholder="Prepare today's Jetson demo brief." />
+        <p id="skill-output">Skill output will appear here.</p>
+        <ul id="skills"></ul>
+      </section>
+    </main>
+
+    <script>
+      let authToken = localStorage.getItem("bingomate_token") || "";
+      let eventSocket;
+      let lastVoiceResponse = "";
+      document.getElementById("auth-token").value = authToken;
+
+      function authHeaders() {
+        return authToken ? { Authorization: `Bearer ${authToken}` } : {};
+      }
+
+      async function getJson(url, options = {}) {
+        const headers = { ...(options.headers || {}), ...authHeaders() };
+        const response = await fetch(url, { ...options, headers });
+        if (!response.ok) {
+          if (response.status === 401) throw new Error("Local auth token required");
+          throw new Error(`${response.status} ${response.statusText}`);
+        }
+        return response.json();
+      }
+
+      function renderList(id, rows, formatter) {
+        const list = document.getElementById(id);
+        list.innerHTML = rows.length ? rows.map(formatter).join("") : "<li>No data yet.</li>";
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      }
+
+      function downloadText(filename, text, type) {
+        const blob = new Blob([text], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function renderEvent(event) {
+        const list = document.getElementById("events");
+        const item = document.createElement("li");
+        const payload = JSON.stringify(event.payload || {});
+        item.innerHTML = `<strong>${escapeHtml(event.kind)}</strong><br><span class="small">${escapeHtml(payload)}</span>`;
+        list.prepend(item);
+        while (list.children.length > 20) list.lastElementChild.remove();
+      }
+
+      function connectEvents(authRequired) {
+        if (authRequired && !authToken) {
+          document.getElementById("event-state").textContent = "Token required before opening event stream.";
+          return;
+        }
+        if (eventSocket && (eventSocket.readyState === WebSocket.OPEN || eventSocket.readyState === WebSocket.CONNECTING)) {
+          return;
+        }
+        const protocol = location.protocol === "https:" ? "wss" : "ws";
+        const url = new URL(`${protocol}://${location.host}/ws/events`);
+        if (authToken) url.searchParams.set("token", authToken);
+        eventSocket = new WebSocket(url);
+        eventSocket.onopen = () => {
+          document.getElementById("event-state").textContent = "Live event stream connected.";
+        };
+        eventSocket.onmessage = (message) => renderEvent(JSON.parse(message.data));
+        eventSocket.onclose = () => {
+          document.getElementById("event-state").textContent = "Live event stream disconnected.";
+        };
+      }
+
+      async function refresh() {
+        const health = await getJson("/healthz", { headers: {} });
+        document.getElementById("health").textContent = health.ok ? "BingoMate online" : "Needs attention";
+        document.getElementById("health-dot").classList.toggle("warn", health.auth_required && !authToken);
+        document.getElementById("mode").textContent = health.simulation ? "Sim" : "Live";
+        document.getElementById("memory-security").textContent = health.memory_encryption ? "Encrypted" : "Plain";
+        document.getElementById("auth-state").textContent = health.auth_required
+          ? "Auth token is enabled. API calls require your local token."
+          : "Auth token is not enabled. Keep the service bound to localhost or set BINGOMATE_AUTH_TOKEN before exposing it.";
+
+        const [memories, devices, skills, recentEvents, identity, context, transportState, reasoningState] = await Promise.all([
+          getJson("/api/memories"),
+          getJson("/api/devices"),
+          getJson("/api/skills"),
+          getJson("/api/events"),
+          getJson("/api/identity"),
+          getJson("/api/context"),
+          getJson("/api/devices/transports"),
+          getJson("/api/reasoning/status"),
+        ]);
+
+        document.getElementById("memory-count").textContent = memories.length;
+        document.getElementById("device-count").textContent = devices.length;
+        document.getElementById("skill-count").textContent = skills.length;
+        document.getElementById("suggestion-count").textContent = context.suggestions.length;
+        document.getElementById("reasoning-mode").textContent = reasoningState.default_mode;
+        document.getElementById("reasoning-output").textContent = `${reasoningState.default_mode}: local LLM ${reasoningState.local_llm.configured ? "configured" : "not configured"}, cloud ${reasoningState.cloud_assist.configured ? "configured" : "not configured"}.`;
+        document.getElementById("identity-name").textContent = `${identity.name} is ${identity.state}.`;
+        document.getElementById("identity-tagline").textContent = identity.tagline;
+        document.getElementById("identity-state").innerHTML = `${escapeHtml(identity.state)} &middot; ${escapeHtml(identity.privacy_posture.mode)}`;
+        document.getElementById("identity-state-dot").classList.toggle("warn", identity.state === "caution");
+        document.getElementById("identity-role").textContent = identity.role;
+        document.getElementById("identity-growth").textContent = identity.growth.summary;
+        renderList("identity-awareness", [
+          ["Runtime", `${identity.system_awareness.runtime_platform}/${identity.system_awareness.runtime_machine}`],
+          ["Load", identity.system_awareness.system_metrics.load_1m ?? "unavailable"],
+          ["Temperature", identity.system_awareness.system_metrics.temperature_c === null ? "unavailable" : `${identity.system_awareness.system_metrics.temperature_c} C`],
+          ["Target", identity.system_awareness.target_brain],
+          ["Devices", `${identity.system_awareness.device_count} connected or simulated`],
+          ["Skills", `${identity.system_awareness.skill_count} active`],
+          ["Privacy", identity.privacy_posture.mode],
+        ], (item) => `<li><strong>${escapeHtml(item[0])}</strong><br>${escapeHtml(item[1])}</li>`);
+        renderList("devices", devices, (item) => `<li><strong>${escapeHtml(item.name)}</strong><br>${escapeHtml(item.role)} &middot; ${escapeHtml(item.transport)} &middot; ${escapeHtml(item.status)}</li>`);
+        renderList("transports", transportState.transports, (item) => `
+          <li>
+            <strong>${escapeHtml(item.name)}</strong><br>
+            ${item.enabled ? "enabled" : "disabled"} &middot; ${item.available ? "available" : "missing dependency"} &middot; ${item.configured ? "configured" : "not configured"}<br>
+            <span class="small">${escapeHtml(JSON.stringify(item.details || {}))}</span>
+          </li>
+        `);
+        renderList("reasoning-details", [
+          ["Default", reasoningState.default_mode],
+          ["Local LLM", `${reasoningState.local_llm.provider} &middot; ${reasoningState.local_llm.model} &middot; ${reasoningState.local_llm.endpoint}`],
+          ["Cloud Assist", `${reasoningState.cloud_assist.enabled ? "enabled" : "disabled"} &middot; ${reasoningState.cloud_assist.model}`],
+          ["Fallback", reasoningState.deterministic_fallback.mode],
+        ], (item) => `<li><strong>${escapeHtml(item[0])}</strong><br>${escapeHtml(item[1])}</li>`);
+        renderList("suggestions", context.suggestions, (item) => `
+          <li>
+            <strong>${escapeHtml(item.title)}</strong><br>
+            ${escapeHtml(item.description)}<br>
+            <span class="small">${escapeHtml(item.priority)} &middot; ${escapeHtml(item.category)} &middot; ${item.requires_approval ? "approval required" : "informational"}</span><br>
+            <span class="small">Next: ${escapeHtml(item.action)}</span>
+          </li>
+        `);
+        renderList("skills", skills, (item) => `
+          <li>
+            <strong>${escapeHtml(item.name)}</strong><br>
+            ${escapeHtml(item.description)}<br>
+            <span class="small">${escapeHtml(item.source)} &middot; ${item.requires_approval ? "approval required" : "read-only"}</span>
+            <button class="secondary" data-run-skill="${escapeHtml(item.name)}">Run</button>
+            ${item.source === "local-template" ? `<button class="danger" data-delete-skill="${escapeHtml(item.name)}">Delete</button>` : ""}
+          </li>
+        `);
+        renderList("memories", memories, (item) => `
+          <li>
+            <strong>${escapeHtml(item.kind)}</strong> &middot; importance ${escapeHtml(item.importance)}<br>
+            ${escapeHtml(item.content)}<br>
+            <span class="small">tags: ${escapeHtml((item.tags || []).join(", ") || "none")}</span>
+            <button class="danger" data-delete-memory="${escapeHtml(item.id)}">Forget</button>
+          </li>
+        `);
+        renderList("events", recentEvents, (item) => `<li><strong>${escapeHtml(item.kind)}</strong><br><span class="small">${escapeHtml(JSON.stringify(item.payload || {}))}</span></li>`);
+        connectEvents(health.auth_required);
+      }
+
+      document.getElementById("save-token").addEventListener("click", async () => {
+        authToken = document.getElementById("auth-token").value.trim();
+        localStorage.setItem("bingomate_token", authToken);
+        if (eventSocket) eventSocket.close();
+        await refresh();
+      });
+
+      document.getElementById("clear-token").addEventListener("click", async () => {
+        authToken = "";
+        document.getElementById("auth-token").value = "";
+        localStorage.removeItem("bingomate_token");
+        if (eventSocket) eventSocket.close();
+        await refresh().catch((error) => {
+          document.getElementById("auth-state").textContent = error.message;
+        });
+      });
+
+      document.getElementById("send").addEventListener("click", async () => {
+        const prompt = document.getElementById("prompt").value.trim();
+        const answer = document.getElementById("answer");
+        answer.textContent = "Thinking locally...";
+        try {
+          const result = await getJson("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt }),
+          });
+          answer.textContent = result.response;
+          await refresh();
+        } catch (error) {
+          answer.textContent = `Request failed: ${error.message}`;
+        }
+      });
+
+      async function playVoiceText(text) {
+        if (!text) return;
+        const response = await fetch("/api/voice/say.wav", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...authHeaders() },
+          body: JSON.stringify({ text }),
+        });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const blob = await response.blob();
+        const player = document.getElementById("voice-player");
+        player.src = URL.createObjectURL(blob);
+        await player.play().catch(() => {});
+      }
+
+      document.getElementById("voice-turn").addEventListener("click", async () => {
+        const audioHint = document.getElementById("voice-hint").value.trim();
+        const output = document.getElementById("voice-output");
+        output.textContent = "Listening locally...";
+        try {
+          const result = await getJson("/api/voice/turn", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audio_hint: audioHint, remember: true, scene: "desk" }),
+          });
+          lastVoiceResponse = result.response.response || "";
+          output.textContent = `${result.accepted ? "Accepted" : "Standby"}: ${lastVoiceResponse}`;
+          if (result.accepted) await playVoiceText(lastVoiceResponse);
+          await refresh();
+        } catch (error) {
+          output.textContent = `Voice turn failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("voice-play").addEventListener("click", async () => {
+        const output = document.getElementById("voice-output");
+        try {
+          await playVoiceText(lastVoiceResponse || output.textContent);
+        } catch (error) {
+          output.textContent = `Voice playback failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("voice-stt-status").addEventListener("click", async () => {
+        const output = document.getElementById("voice-stt-output");
+        output.textContent = "Checking STT boundary...";
+        try {
+          const result = await getJson("/api/voice/stt/status");
+          output.textContent = `${result.provider}: ${result.configured ? "configured" : "not configured"}; simulation fallback ${result.simulation_fallback ? "on" : "off"}.`;
+        } catch (error) {
+          output.textContent = `STT status failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("voice-transcribe").addEventListener("click", async () => {
+        const output = document.getElementById("voice-stt-output");
+        output.textContent = "Transcribing through local STT boundary...";
+        try {
+          const result = await getJson("/api/voice/transcribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              audio_hint: document.getElementById("voice-hint").value.trim(),
+              audio_base64: "",
+              content_type: "audio/wav",
+            }),
+          });
+          output.textContent = `${result.mode}: ${result.text} (${result.reason})`;
+        } catch (error) {
+          output.textContent = `STT transcript failed: ${error.message}`;
+        }
+      });
+
+      function summarizeVision(observation) {
+        const objects = (observation.objects || []).join(", ") || "none";
+        const reason = observation.reason ? ` Reason: ${observation.reason}.` : "";
+        return `${observation.mode}: ${observation.scene}. Objects: ${objects}.${reason}`;
+      }
+
+      document.getElementById("vision-analyze").addEventListener("click", async () => {
+        const output = document.getElementById("vision-output");
+        output.textContent = "Analyzing locally...";
+        try {
+          const result = await getJson("/api/vision/analyze", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ scene: document.getElementById("vision-scene").value.trim() || "desk" }),
+          });
+          output.textContent = summarizeVision(result);
+          await refresh();
+        } catch (error) {
+          output.textContent = `Vision analysis failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("vision-capture").addEventListener("click", async () => {
+        const output = document.getElementById("vision-output");
+        output.textContent = "Requesting local camera capture...";
+        try {
+          const result = await getJson("/api/vision/capture", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ allow_camera: true, include_frame: false }),
+          });
+          output.textContent = summarizeVision(result);
+          await refresh();
+        } catch (error) {
+          output.textContent = `Vision capture failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("reasoning-probe").addEventListener("click", async () => {
+        const output = document.getElementById("reasoning-output");
+        output.textContent = "Probing reasoning runtime...";
+        try {
+          const result = await getJson("/api/reasoning/probe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              prompt: "Summarize BingoMate reasoning runtime in one sentence.",
+              include_memories: false,
+            }),
+          });
+          output.textContent = `${result.response.mode}: ${result.response.response}`;
+        } catch (error) {
+          output.textContent = `Reasoning probe failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("mqtt-dry-run").addEventListener("click", async () => {
+        const output = document.getElementById("transport-output");
+        output.textContent = "Building MQTT envelope locally...";
+        try {
+          const result = await getJson("/api/devices/mqtt/publish", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              device_id: "esp32-matrix",
+              payload: { status: "OK", source: "dashboard-dry-run" },
+              dry_run: true,
+            }),
+          });
+          output.textContent = `${result.reason}: ${result.envelope.device_id} -> ${result.topic}`;
+          await refresh();
+        } catch (error) {
+          output.textContent = `MQTT dry-run failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("add-memory").addEventListener("click", async () => {
+        const content = document.getElementById("memory-content").value.trim();
+        if (!content) return;
+        const tags = document.getElementById("memory-tags").value.split(",").map((tag) => tag.trim()).filter(Boolean);
+        await getJson("/api/memories", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            kind: document.getElementById("memory-kind").value,
+            content,
+            importance: 5,
+            tags,
+          }),
+        });
+        document.getElementById("memory-content").value = "";
+        await refresh();
+      });
+
+      document.getElementById("search-memory").addEventListener("click", async () => {
+        const query = document.getElementById("memory-query").value.trim();
+        const mode = document.getElementById("memory-search-mode").value;
+        const output = document.getElementById("memory-search-output");
+        output.textContent = query ? `Searching ${mode} memory locally...` : "Showing recent memories.";
+        try {
+          const result = await getJson(`/api/memories/search?q=${encodeURIComponent(query)}&mode=${encodeURIComponent(mode)}&limit=20`);
+          output.textContent = `${result.mode}: ${result.results.length} result(s). Vector mode: ${result.vector_status.mode}.`;
+          renderList("memories", result.results, (item) => `
+            <li>
+              <strong>${escapeHtml(item.memory.kind)}</strong> &middot; score ${escapeHtml(item.score)}<br>
+              ${escapeHtml(item.memory.content)}<br>
+              <span class="small">reasons: ${escapeHtml((item.reasons || []).join(", ") || "none")}</span>
+              <button class="danger" data-delete-memory="${escapeHtml(item.memory.id)}">Forget</button>
+            </li>
+          `);
+        } catch (error) {
+          output.textContent = `Memory search failed: ${error.message}`;
+        }
+      });
+
+      document.getElementById("memories").addEventListener("click", async (event) => {
+        const button = event.target.closest("[data-delete-memory]");
+        if (!button) return;
+        await getJson(`/api/memories/${button.dataset.deleteMemory}`, { method: "DELETE" });
+        await refresh();
+      });
+
+      document.getElementById("add-skill").addEventListener("click", async () => {
+        const name = document.getElementById("skill-name").value.trim();
+        const description = document.getElementById("skill-description").value.trim();
+        const template = document.getElementById("skill-template").value.trim();
+        if (!name || !description || !template) return;
+        await getJson("/api/skills", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            description,
+            template,
+            requires_approval: document.getElementById("skill-approval").checked,
+          }),
+        });
+        document.getElementById("skill-name").value = "";
+        document.getElementById("skill-description").value = "";
+        document.getElementById("skill-template").value = "";
+        await refresh();
+      });
+
+      document.getElementById("skills").addEventListener("click", async (event) => {
+        const runButton = event.target.closest("[data-run-skill]");
+        const deleteButton = event.target.closest("[data-delete-skill]");
+        if (runButton) {
+          const prompt = document.getElementById("skill-run-prompt").value.trim() || document.getElementById("prompt").value.trim();
+          const result = await getJson(`/api/skills/${runButton.dataset.runSkill}/run`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ prompt, context: { dashboard: true } }),
+          });
+          document.getElementById("skill-output").textContent = result.data.output || result.message;
+          await refresh();
+        }
+        if (deleteButton) {
+          await getJson(`/api/skills/${deleteButton.dataset.deleteSkill}`, { method: "DELETE" });
+          await refresh();
+        }
+      });
+
+      async function exportMemories(format) {
+        const response = await fetch(`/api/memories/export?format=${format}`, { headers: authHeaders() });
+        if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+        const text = await response.text();
+        downloadText(`bingomate-memories.${format === "csv" ? "csv" : "jsonl"}`, text, format === "csv" ? "text/csv" : "application/x-ndjson");
+      }
+
+      document.getElementById("export-jsonl").addEventListener("click", () => exportMemories("jsonl"));
+      document.getElementById("export-csv").addEventListener("click", () => exportMemories("csv"));
+
+      refresh().catch((error) => {
+        document.getElementById("health").textContent = `API unavailable: ${error.message}`;
+        document.getElementById("answer").textContent = error.message;
+      });
+    </script>
+  </body>
+</html>

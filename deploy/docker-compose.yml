@@ -1,0 +1,11 @@
+services:
+  bingomate:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "8090:8090"
+    volumes:
+      - ../data:/app/data
+    environment:
+      - BINGOMATE_MODE=local

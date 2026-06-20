@@ -1,0 +1,11 @@
+{
+  "name": "sensitive-demo",
+  "vibration_warn_g": 1.15,
+  "vibration_alert_g": 1.75,
+  "temperature_warn_c": 35.0,
+  "temperature_alert_c": 50.0,
+  "humidity_alert_pct": 75.0,
+  "sound_alert_level": 0.6,
+  "warn_score": 25,
+  "alert_score": 60
+}

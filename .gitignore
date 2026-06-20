@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# BingoMate local state and secrets
+.env.*
+!.env.example
+*.db
+*.db-shm
+*.db-wal
+exports/
+data/
+Thumbs.db
