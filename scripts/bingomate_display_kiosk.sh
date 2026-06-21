@@ -14,7 +14,7 @@ health_ready() {
     return 0
   fi
   if command -v python3 >/dev/null 2>&1; then
-    HEALTH_URL="${HEALTH_URL}" python3 - <<'PY'
+    if HEALTH_URL="${HEALTH_URL}" python3 - <<'PY'
 import os
 import sys
 import urllib.request
@@ -25,6 +25,9 @@ try:
 except Exception:
     sys.exit(1)
 PY
+    then
+      return 0
+    fi
   fi
   return 1
 }
