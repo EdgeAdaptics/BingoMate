@@ -26,7 +26,9 @@ class IdentityEngine:
     ) -> dict[str, Any]:
         growth = self._growth(memories, skills)
         privacy_posture = self._privacy_posture(settings.host, auth_required, memory_encryption, settings.cloud_assist)
-        visual_state = self._visual_state(privacy_posture, growth)
+        system_awareness = self._system_awareness(settings, devices, skills, memories, auth_required, memory_encryption)
+        character = self._character_profile(privacy_posture, growth, system_awareness)
+        visual_state = str(character["presence"]["display_state"])
         return {
             "schema": "bingomate-identity/v1",
             "name": self.assistant_name,
@@ -37,6 +39,7 @@ class IdentityEngine:
                 "archetype": "Expressive edge-native lab companion.",
                 "boundary": "Bingo is an original character, not a replica of any film character, silhouette, dialogue, or story.",
             },
+            "character": character,
             "personality": {
                 "traits": ["friendly", "focused", "adaptable", "diligent", "permission-aware", "expressive"],
                 "signature_behaviors": [
@@ -56,15 +59,18 @@ class IdentityEngine:
             },
             "growth": growth,
             "privacy_posture": privacy_posture,
-            "system_awareness": self._system_awareness(settings, devices, skills, memories, auth_required, memory_encryption),
+            "system_awareness": system_awareness,
         }
 
     def system_prompt_frame(self, snapshot: dict[str, Any]) -> str:
         awareness = snapshot["system_awareness"]
         privacy = snapshot["privacy_posture"]
+        presence = snapshot.get("character", {}).get("presence", {})
         return (
             f"You are {snapshot['name']}, {snapshot['role']} "
             f"Current state: {snapshot['state']}. "
+            f"Character presence: {presence.get('expression', 'focused')} with focus on "
+            f"{presence.get('active_focus', 'local usefulness and safety')}. "
             f"Runtime: {awareness['runtime_platform']} on {awareness['runtime_machine']}. "
             f"Devices: {awareness['device_count']}; skills: {awareness['skill_count']}; memories: {awareness['memory_count']}. "
             f"Privacy posture: {privacy['mode']}. "
@@ -117,12 +123,101 @@ class IdentityEngine:
             "cloud_assist": cloud_assist,
         }
 
-    def _visual_state(self, privacy_posture: dict[str, Any], growth: dict[str, Any]) -> str:
+    def _visual_state(
+        self,
+        privacy_posture: dict[str, Any],
+        growth: dict[str, Any],
+        system_awareness: dict[str, Any] | None = None,
+    ) -> str:
         if privacy_posture["mode"] == "needs-token-before-network-use":
+            return "caution"
+        metrics = (system_awareness or {}).get("system_metrics", {})
+        temperature_c = metrics.get("temperature_c")
+        if isinstance(temperature_c, (int, float)) and temperature_c >= 80:
             return "caution"
         if growth["learned_skills"] or growth["identity_memories"]:
             return "learning"
         return "ready"
+
+    def _character_profile(
+        self,
+        privacy_posture: dict[str, Any],
+        growth: dict[str, Any],
+        system_awareness: dict[str, Any],
+    ) -> dict[str, Any]:
+        display_state = self._visual_state(privacy_posture, growth, system_awareness)
+        metrics = system_awareness.get("system_metrics", {})
+        temperature_c = metrics.get("temperature_c")
+
+        if privacy_posture["mode"] == "needs-token-before-network-use":
+            expression = "guarded"
+            gesture = "amber shield hover"
+            active_focus = "protecting local identity and memory before network exposure"
+            visual_cues = ["amber segmented ring", "permission badge", "reduced motion pulse"]
+            voice_cue = "I need a local auth token before exposing private state."
+        elif isinstance(temperature_c, (int, float)) and temperature_c >= 80:
+            expression = "concerned"
+            gesture = "thermal caution pulse"
+            active_focus = "watching Jetson thermal headroom before heavier AI work"
+            visual_cues = ["amber heat pulse", "slower orbit", "system health badge"]
+            voice_cue = "The Jetson is warm; I should keep the workload measured."
+        elif display_state == "learning":
+            expression = "curious"
+            gesture = "green-violet learning orbit"
+            active_focus = "adapting from approved preferences, feedback, and local skills"
+            visual_cues = ["green-violet braid", "memory sparkle", "skill-growth tick"]
+            voice_cue = "I am updating my local playbook from approved signals."
+        else:
+            expression = "ready"
+            gesture = "steady cyan hover"
+            active_focus = "monitoring local readiness and waiting for useful work"
+            visual_cues = ["soft cyan halo", "steady status ring", "quiet waveform"]
+            voice_cue = "Bingo is ready locally."
+
+        return {
+            "schema": "bingomate-character/v1",
+            "name": self.assistant_name,
+            "design_lineage": {
+                "archetype": "expressive flying lab-assistant companion",
+                "implementation": "original luminous orb and holographic edge-copilot language",
+                "originality_boundary": (
+                    "Do not copy Weebo's name, film clips, dialogue, exact silhouette, yellow-black shell, "
+                    "screen behavior, romantic story arc, or copyrighted assets."
+                ),
+            },
+            "presence": {
+                "display_state": display_state,
+                "expression": expression,
+                "gesture": gesture,
+                "active_focus": active_focus,
+                "visual_cues": visual_cues,
+                "voice_cue": voice_cue,
+            },
+            "self_model": {
+                "safe_claim": "I am system-aware within local runtime, memory, device, skill, and privacy signals.",
+                "growth_claim": "I adapt through user-approved memories, feedback, preferences, and skills.",
+                "must_not_claim": [
+                    "subjective consciousness",
+                    "hidden autonomy",
+                    "private-data access without permission",
+                    "physical control without explicit approval",
+                ],
+            },
+            "adaptation_channels": [
+                "preference memory",
+                "feedback memory",
+                "template skills",
+                "runtime health",
+                "device events",
+                "automation approvals",
+            ],
+            "interaction_contract": [
+                "be useful before being cute",
+                "make system state visible",
+                "label simulation, local, cloud-assisted, and blocked paths",
+                "ask before device control, file changes, sharing, scheduling, or memory deletion",
+            ],
+        }
 
     def _system_awareness(
         self,

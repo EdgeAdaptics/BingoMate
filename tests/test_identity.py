@@ -7,6 +7,7 @@ import pytest
 
 from bingomate.core import BingoMateSettings
 from bingomate.identity import IdentityEngine
+from bingomate.memory import MemoryRecord
 
 
 def test_identity_engine_init() -> None:
@@ -31,6 +32,10 @@ def test_identity_engine_snapshot() -> None:
     
     assert snapshot is not None
     assert "Bingo" in snapshot.get("name", "")
+    assert snapshot["character"]["schema"] == "bingomate-character/v1"
+    assert snapshot["character"]["presence"]["display_state"] == "ready"
+    assert "original" in snapshot["character"]["design_lineage"]["implementation"]
+    assert "subjective consciousness" in snapshot["character"]["self_model"]["must_not_claim"]
 
 
 def test_identity_engine_system_prompt() -> None:
@@ -51,6 +56,39 @@ def test_identity_engine_system_prompt() -> None:
     assert prompt is not None
     assert len(prompt) > 0
     assert "Bingo" in prompt or "assistant" in prompt.lower()
+    assert "Character presence" in prompt
+    assert "Never claim real consciousness" in prompt
+
+
+def test_identity_character_profile_learning_state() -> None:
+    """Test character presence reflects user-approved learning signals."""
+    engine = IdentityEngine(assistant_name="Bingo")
+    memory = MemoryRecord(
+        id=1,
+        kind="preference",
+        content="Prefer concise edge lab updates.",
+        importance=7,
+        tags=["persona"],
+        metadata={},
+        created_at=0.0,
+    )
+
+    snapshot = engine.snapshot(
+        settings=BingoMateSettings(assistant_name="Bingo"),
+        devices=[],
+        skills=[{"name": "daily_lab_brief", "source": "local-template"}],
+        memories=[memory],
+        auth_required=False,
+        memory_encryption=True,
+    )
+
+    character = snapshot["character"]
+
+    assert snapshot["state"] == "learning"
+    assert character["presence"]["expression"] == "curious"
+    assert character["presence"]["display_state"] == "learning"
+    assert "approved preferences" in character["presence"]["active_focus"]
+    assert "Do not copy Weebo" in character["design_lineage"]["originality_boundary"]
 
 
 def test_identity_system_metrics_ignores_unstable_sysfs(monkeypatch: pytest.MonkeyPatch) -> None:

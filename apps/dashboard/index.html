@@ -326,7 +326,9 @@
       <section class="card">
         <h2>Bingo Identity</h2>
         <p id="identity-role">Identity profile will appear after local API auth succeeds.</p>
+        <p id="identity-character" class="small">Character presence will appear after local API auth succeeds.</p>
         <p id="identity-growth" class="small">Growth signals stay local and user-approved.</p>
+        <ul id="identity-character-cues"></ul>
         <ul id="identity-awareness"></ul>
       </section>
 
@@ -519,7 +521,15 @@
         document.getElementById("identity-state").innerHTML = `${escapeHtml(identity.state)} &middot; ${escapeHtml(identity.privacy_posture.mode)}`;
         document.getElementById("identity-state-dot").classList.toggle("warn", identity.state === "caution");
         document.getElementById("identity-role").textContent = identity.role;
+        const character = identity.character || {};
+        const presence = character.presence || {};
+        document.getElementById("identity-character").textContent = `${presence.expression || identity.state} · ${presence.gesture || "steady local hover"} · ${presence.active_focus || "monitoring local readiness"}`;
         document.getElementById("identity-growth").textContent = identity.growth.summary;
+        renderList("identity-character-cues", [
+          ["Display State", presence.display_state || identity.state],
+          ["Voice Cue", presence.voice_cue || "Bingo is ready locally."],
+          ["Originality", character.design_lineage?.implementation || identity.inspiration.boundary],
+        ], (item) => `<li><strong>${escapeHtml(item[0])}</strong><br>${escapeHtml(item[1])}</li>`);
         renderList("identity-awareness", [
           ["Runtime", `${identity.system_awareness.runtime_platform}/${identity.system_awareness.runtime_machine}`],
           ["Load", identity.system_awareness.system_metrics.load_1m ?? "unavailable"],
