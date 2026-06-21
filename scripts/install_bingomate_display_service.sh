@@ -27,7 +27,7 @@ WorkingDirectory=${ROOT_DIR}
 EnvironmentFile=-${ROOT_DIR}/.env.local
 Environment=BINGOMATE_HOST=${HOST}
 Environment=BINGOMATE_PORT=${PORT}
-ExecStart=${ROOT_DIR}/.venv/bin/bingomate-api --host \${BINGOMATE_HOST} --port \${BINGOMATE_PORT}
+ExecStart=${ROOT_DIR}/.venv/bin/bingomate-api --host ${HOST} --port ${PORT}
 Restart=on-failure
 RestartSec=5
 
