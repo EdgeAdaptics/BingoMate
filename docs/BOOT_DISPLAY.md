@@ -10,6 +10,8 @@ The boot display turns a monitor connected to the Jetson into Bingo's always-on 
 - Browser speech synthesis for "Bingo online" voice.
 - Visible boot sequence for brain, memory, device trust, voice, and presence readiness.
 - Live identity, context, device, skill, and proactive suggestion state.
+- Dynamic listening, thinking, and speaking states with ring color, mouth, wing, waveform, transcript, and response feedback.
+- Live event stream that reacts to backend `voice.transcribed`, `voice.turn`, `chat.completed`, and reasoning events.
 - Kiosk launch when the Jetson reaches graphical boot.
 
 The character is original and code-native. It does not use copyrighted movie clips, Weebo assets, or copied character design.
@@ -113,6 +115,21 @@ http://127.0.0.1:8090/display#token=same-local-token
 ```
 
 The display stores the token in browser local storage and then removes it from the visible URL.
+
+## Dynamic Voice Feedback
+
+The display includes a local interaction panel for demo and kiosk use:
+
+- **Heard** shows the latest wake-word transcript or typed voice prompt.
+- **Bingo says** shows the response before and during local WAV playback.
+- The central character changes visual state:
+  - cyan listening ring and meter while hearing a prompt,
+  - violet thinking ring while reasoning,
+  - green speaking waveform and mouth animation while audio plays,
+  - amber caution state when blocked or unavailable.
+- The event feed connects to `/ws/events` and mirrors backend voice, chat, reasoning, memory, device, and automation events.
+
+The input box is intentionally display-local and calls `/api/voice/turn` with `remember: false` so kiosk demos can show behavior without storing every prompt as memory.
 
 ## Local Avatar Asset
 

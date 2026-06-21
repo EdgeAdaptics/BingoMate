@@ -57,3 +57,5 @@ def test_reasoning_engine_with_identity() -> None:
     
     assert response is not None
     assert response["mode"] == "local-simulation"
+    assert "You are Bingo" not in str(response["response"])
+    assert "identity and privacy rules are active" in str(response["response"])

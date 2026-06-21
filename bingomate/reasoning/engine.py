@@ -68,7 +68,7 @@ class ReasoningEngine:
                 return cloud_response
 
         memory_note = f" I found {len(memories)} relevant memories." if memories else ""
-        identity_note = f" {identity_frame}" if identity_frame else ""
+        identity_note = " My local identity and privacy rules are active." if identity_frame else ""
         return {
             "mode": "local-simulation",
             "response": (
