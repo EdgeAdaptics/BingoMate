@@ -44,7 +44,25 @@ Prerequisites:
 - Chromium is installed as `chromium-browser` or `chromium`.
 - `scripts/jetson_prepare.sh` has created `.venv`.
 
-Install the API and display services:
+Preferred GNOME desktop install:
+
+```bash
+bash scripts/install_bingomate_boot_gui.sh
+```
+
+This creates:
+
+- `bingomate-api.service` for the FastAPI backend.
+- `~/.config/autostart/bingomate-display.desktop` for Chromium kiosk launch after the user desktop session starts.
+
+To make a dedicated test Jetson boot directly into the Bingo display, enable GDM autologin during installation:
+
+```bash
+ENABLE_GDM_AUTOLOGIN=1 bash scripts/install_bingomate_boot_gui.sh
+sudo reboot
+```
+
+Service-only install:
 
 ```bash
 bash scripts/install_bingomate_display_service.sh
@@ -55,6 +73,8 @@ This creates:
 - `bingomate-api.service` for the FastAPI backend.
 - `bingomate-display.service` for Chromium kiosk mode.
 
+Use service-only mode only when the user session has working `DISPLAY=:0` and `~/.Xauthority`.
+
 Useful service commands:
 
 ```bash
@@ -62,6 +82,14 @@ sudo systemctl status bingomate-api.service --no-pager
 sudo systemctl status bingomate-display.service --no-pager
 sudo journalctl -u bingomate-display.service -f
 sudo systemctl restart bingomate-display.service
+```
+
+Desktop autostart debug commands:
+
+```bash
+cat ~/.config/autostart/bingomate-display.desktop
+systemctl status bingomate-api.service --no-pager
+journalctl -u bingomate-api.service -f
 ```
 
 ## Local Token Handling
