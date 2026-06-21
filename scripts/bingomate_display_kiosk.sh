@@ -9,12 +9,39 @@ if [[ -n "${BINGOMATE_DISPLAY_TOKEN:-}" ]]; then
   DISPLAY_URL="${DISPLAY_URL}#token=${BINGOMATE_DISPLAY_TOKEN}"
 fi
 
-for _ in $(seq 1 90); do
+health_ready() {
   if command -v curl >/dev/null 2>&1 && curl -fsS "${HEALTH_URL}" >/dev/null 2>&1; then
+    return 0
+  fi
+  if command -v python3 >/dev/null 2>&1; then
+    HEALTH_URL="${HEALTH_URL}" python3 - <<'PY'
+import os
+import sys
+import urllib.request
+
+try:
+    with urllib.request.urlopen(os.environ["HEALTH_URL"], timeout=2) as response:
+        sys.exit(0 if response.status == 200 else 1)
+except Exception:
+    sys.exit(1)
+PY
+  fi
+  return 1
+}
+
+READY=0
+for _ in $(seq 1 90); do
+  if health_ready; then
+    READY=1
     break
   fi
   sleep 1
 done
+
+if [[ "${READY}" != "1" ]]; then
+  echo "BingoMate API did not become healthy at ${HEALTH_URL}."
+  exit 1
+fi
 
 BROWSER=""
 for candidate in chromium-browser chromium google-chrome-stable google-chrome; do
