@@ -13,11 +13,11 @@ The local `origin` remote should point to `https://github.com/EdgeAdaptics/Bingo
 ```powershell
 git remote set-url origin https://github.com/EdgeAdaptics/BingoMate.git
 git fetch origin main
-git switch -c codex/bingomate-product-scaffold origin/main
+git switch -c edgeadaptics/bingomate-product-scaffold origin/main
 git checkout main -- .
 git add .
 git commit -m "Design BingoMate edge AI companion"
-git push -u origin codex/bingomate-product-scaffold
+git push -u origin edgeadaptics/bingomate-product-scaffold
 ```
 
 Then open a pull request into `main`.

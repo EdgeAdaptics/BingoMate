@@ -153,18 +153,25 @@ class VoicePipeline:
         )
 
     def startup_chime_wav(self, sample_rate: int = 22050) -> bytes:
-        notes = [(523.25, 0.12), (659.25, 0.14), (783.99, 0.18)]
+        notes = [
+            (523.25, 0.10),
+            (659.25, 0.12),
+            (783.99, 0.10),
+            (659.25, 0.08),
+            (880.00, 0.14),
+        ]
         samples: list[int] = []
         for frequency, duration in notes:
             frame_count = int(sample_rate * duration)
             for index in range(frame_count):
                 progress = index / max(1, frame_count - 1)
+                vibrato = 1.0 + 0.08 * math.sin(2 * math.pi * 6 * index / sample_rate)
                 envelope = math.sin(math.pi * progress)
-                value = 0.32 * envelope * math.sin(2 * math.pi * frequency * index / sample_rate)
+                value = 0.35 * envelope * vibrato * math.sin(2 * math.pi * frequency * index / sample_rate)
                 samples.append(int(max(-1.0, min(1.0, value)) * 32767))
-        pause = [0] * int(sample_rate * 0.04)
-        framed_samples = samples[: int(sample_rate * 0.12)] + pause + samples[int(sample_rate * 0.12) :]
-        return wav_from_samples(framed_samples, sample_rate)
+            pause = [0] * int(sample_rate * 0.05)
+            samples.extend(pause)
+        return wav_from_samples(samples, sample_rate)
 
     def synthesize_speech(self, text: str, sample_rate: int = 22050) -> VoiceSynthesis:
         safe_text = sanitize_voice_text(text)

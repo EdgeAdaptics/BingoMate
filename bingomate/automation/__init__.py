@@ -1,3 +1,3 @@
-from bingomate.automation.engine import AutomationEngine
+from bingomate.automation.engine import AutomationEngine, AutomationPolicy
 
-__all__ = ["AutomationEngine"]
+__all__ = ["AutomationEngine", "AutomationPolicy"]

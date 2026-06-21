@@ -1,0 +1,1 @@
+# BingoMate Test Suite

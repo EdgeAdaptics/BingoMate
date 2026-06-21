@@ -706,6 +706,10 @@ def create_app(settings: BingoMateSettings | None = None) -> Any:
     def simulate_voice(text: str = "hey bingo summarize my lab", _auth: None = Depends(require_auth)) -> dict[str, object]:
         return voice.simulate_transcript(text)
 
+    @app.get("/api/automations/status")
+    def automation_status(_auth: None = Depends(require_auth)) -> dict[str, object]:
+        return automation.policy_status()
+
     @app.post("/api/automations/propose")
     def propose_automation(request: AutomationRequest, _auth: None = Depends(require_auth)) -> dict[str, object]:
         if not security.can_execute_action(request.action, request.approved):
@@ -718,6 +722,50 @@ def create_app(settings: BingoMateSettings | None = None) -> Any:
         proposal = automation.propose(request.trigger, request.action)
         events.publish("automation.proposed", {"trigger": request.trigger, "action": request.action})
         return proposal
+
+    @app.post("/api/automations/policies")
+    def create_automation_policy(request: AutomationRequest, _auth: None = Depends(require_auth)) -> dict[str, object]:
+        import uuid
+        policy_id = f"policy-{uuid.uuid4().hex[:8]}"
+        policy = automation.create_policy(
+            policy_id=policy_id,
+            trigger=request.trigger,
+            action=request.action,
+            metadata={"approved_by_request": request.approved},
+        )
+        if request.approved:
+            automation.approve_policy(policy_id)
+            policy = automation.get_policy(policy_id) or policy
+        events.publish("automation.policy_created", {"policy_id": policy_id, "trigger": request.trigger})
+        policy_payload = policy.to_dict()
+        policy_payload["policy_id"] = policy_payload.pop("id")
+        return policy_payload
+
+    @app.get("/api/automations/policies")
+    def list_automation_policies(_auth: None = Depends(require_auth)) -> list[dict[str, object]]:
+        return [policy.to_dict() for policy in automation.list_policies()]
+
+    @app.post("/api/automations/policies/{policy_id}/approve")
+    def approve_policy(policy_id: str, _auth: None = Depends(require_auth)) -> dict[str, object]:
+        success = automation.approve_policy(policy_id)
+        events.publish("automation.policy_approved", {"policy_id": policy_id})
+        return {"success": success, "policy_id": policy_id, "approved": success}
+
+    @app.post("/api/automations/policies/{policy_id}/disable")
+    def disable_policy(policy_id: str, _auth: None = Depends(require_auth)) -> dict[str, object]:
+        success = automation.disable_policy(policy_id)
+        events.publish("automation.policy_disabled", {"policy_id": policy_id})
+        return {"success": success, "policy_id": policy_id, "disabled": success}
+
+    @app.delete("/api/automations/policies/{policy_id}")
+    def delete_automation_policy(policy_id: str, _auth: None = Depends(require_auth)) -> dict[str, object]:
+        success = automation.delete_policy(policy_id)
+        events.publish("automation.policy_deleted", {"policy_id": policy_id})
+        return {"success": success, "policy_id": policy_id, "deleted": success}
+
+    @app.get("/api/automations/executions")
+    def list_automation_executions(limit: int = 50, _auth: None = Depends(require_auth)) -> list[dict[str, object]]:
+        return automation.get_execution_log(limit)
 
     return app
 

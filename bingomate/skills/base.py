@@ -102,9 +102,20 @@ class TemplateSkill:
 
 
 def build_default_registry(skill_store: SkillStore | None = None) -> SkillRegistry:
+    from bingomate.skills.bingo_personality import (
+        BingoExpressionSkill,
+        BingoHelpfulTipSkill,
+        BingoObservationSkill,
+        BingoPrivacyAcknowledgmentSkill,
+    )
+
     registry = SkillRegistry()
     registry.register(EchoSkill())
     registry.register(ReminderDraftSkill())
+    registry.register(BingoExpressionSkill())
+    registry.register(BingoHelpfulTipSkill())
+    registry.register(BingoObservationSkill())
+    registry.register(BingoPrivacyAcknowledgmentSkill())
     if skill_store:
         for definition in skill_store.list_template_skills():
             registry.register(TemplateSkill(definition))

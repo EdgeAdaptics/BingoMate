@@ -91,7 +91,7 @@ The `/display` surface is the always-on character mode for a monitor attached to
 - Big-screen status, device count, skill count, and proactive suggestions.
 - Kiosk-friendly layout that avoids exposing private memory text by default.
 
-## Weebo-Inspired, Original Execution
+## Expressive Lab-Assistant, Original Execution
 
 The requested movie reference is useful as a product archetype: expressive flying lab assistant, emotionally readable companion, and proactive helper. The implementation should avoid copying the protected character design. Bingo's original visual language should use:
 
