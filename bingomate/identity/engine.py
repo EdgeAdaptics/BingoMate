@@ -182,7 +182,7 @@ class IdentityEngine:
         for temp_path in thermal_root.glob("thermal_zone*/temp"):
             try:
                 raw_value = int(temp_path.read_text(encoding="utf-8").strip())
-            except (OSError, ValueError):
+            except (OSError, TypeError, ValueError):
                 continue
             temperature_c = raw_value / 1000 if raw_value > 1000 else float(raw_value)
             if temperature_c < -40 or temperature_c > 130:
