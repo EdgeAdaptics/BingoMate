@@ -1,0 +1,16 @@
+[lab]
+name = "Edge Impact Lab"
+github_owner = "EdgeAdaptics"
+target_repo = "jetson-orin-nano-super-edge-lab"
+jetson_hostname = "karguzedge"
+wifi_ssid = "simple_reuse"
+
+[windows_detected]
+jetson_console = "COM3"
+esp32_matrix_candidate = "COM4"
+
+[jetson_defaults]
+sensor_port = "/dev/ttyACM0"
+matrix_port = "/dev/ttyUSB0"
+http_host = "127.0.0.1"
+http_port = 8088

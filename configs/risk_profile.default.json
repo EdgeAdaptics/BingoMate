@@ -1,0 +1,11 @@
+{
+  "name": "default",
+  "vibration_warn_g": 1.4,
+  "vibration_alert_g": 2.2,
+  "temperature_warn_c": 40.0,
+  "temperature_alert_c": 60.0,
+  "humidity_alert_pct": 85.0,
+  "sound_alert_level": 0.75,
+  "warn_score": 30,
+  "alert_score": 70
+}

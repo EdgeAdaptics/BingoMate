@@ -1,0 +1,27 @@
+{
+  "sketches": {
+    "arduino_nano33_ble_sense": {
+      "description": "Arduino Nano 33 BLE Sense telemetry node",
+      "fqbn": "arduino:mbed_nano:nano33ble",
+      "path": "firmware/arduino_nano33_ble_sense",
+      "core": "arduino:mbed_nano",
+      "libraries": [
+        "Arduino_HTS221",
+        "Arduino_LSM9DS1"
+      ],
+      "default_port_hint": "/dev/ttyACM0"
+    },
+    "esp32_matrix_status": {
+      "description": "ESP32 4x 8x8 I2C matrix status display",
+      "fqbn": "esp32:esp32:esp32",
+      "path": "firmware/esp32_matrix_status",
+      "core": "esp32:esp32",
+      "core_index_url": "https://espressif.github.io/arduino-esp32/package_esp32_index.json",
+      "libraries": [
+        "Adafruit GFX Library",
+        "Adafruit LED Backpack"
+      ],
+      "default_port_hint": "/dev/ttyUSB0"
+    }
+  }
+}
